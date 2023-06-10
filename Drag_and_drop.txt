@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .container {
+            width: 200px;
+            height: 300px;
+            border: 2px solid #ccc;
+            padding: 10px;
+            float: left;
+            margin-right: 20px;
+        }
+        
+        .item {
+            width: 100px;
+            height: 100px;
+            background-color: #f1f1f1;
+            margin-bottom: 10px;
+            cursor: move;
+        }
+        
+        .item.dragging {
+            opacity: 0.5;
+        }
+        
+        .success-message {
+            color: green;
+            margin-top: 10px;
+        }
+        
+        .reset-button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container1">
+        <div class="item" draggable="true">Item 1</div>
+        <div class="item" draggable="true">Item 2</div>
+        <div class="item" draggable="true">Item 3</div>
+    </div>
+    
+    <div class="container" id="container2"></div>
+    
+    <div class="success-message" id="successMessage"></div>
+    
+    <button class="reset-button" onclick="reset()">Reset</button>
+
+    <script>
+        var draggedItem = null;
+        var successMessage = document.getElementById("successMessage");
+        var container1 = document.getElementById("container1");
+        var container2 = document.getElementById("container2");
+
+        function handleDragStart(e) {
+            draggedItem = this;
+            this.classList.add("dragging");
+            e.dataTransfer.effectAllowed = "move";
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = "move";
+            return false;
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            if (draggedItem !== this) {
+                this.appendChild(draggedItem);
+                successMessage.innerText = "Item dropped successfully!";
+            }
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove("dragging");
+        }
+
+        function reset() {
+            container1.innerHTML = '<div class="item" draggable="true">Item 1</div>' +
+                                    '<div class="item" draggable="true">Item 2</div>' +
+                                    '<div class="item" draggable="true">Item 3</div>';
+            container2.innerHTML = '';
+            successMessage.innerText = '';
+        }
+
+        container2.addEventListener("dragover", function(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = "move";
+            return false;
+        });
+
+        container2.addEventListener("drop", function(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            if (draggedItem !== null) {
+                this.appendChild(draggedItem);
+                successMessage.innerText = "Item dropped successfully!";
+            }
+            return false;
+        });
+
+        var items = document.querySelectorAll(".item");
+        items.forEach(function(item) {
+            item.addEventListener("dragstart", handleDragStart, false);
+            item.addEventListener("dragend", handleDragEnd, false);
+        });
+    </script>
+</body>
+</html>
